@@ -66,15 +66,6 @@ Groups are not folders. Each movie gets its own folder, which is the layout Emby
 
 `output/.m3u8tostrm-state.json` tracks every file the tool wrote. Only those files are ever deleted, so your own files are safe. Nothing is purged if any playlist fails to download or comes back empty, so a provider outage won't wipe your library. Folders left empty are removed.
 
-## Releases
-
-Every push and pull request runs the tests on Linux and Windows. Builds from `main` are kept as workflow artifacts for 90 days. To publish a release with all binaries and a `SHA256SUMS` file:
-
-```
-git tag v1.0.0
-git push origin v1.0.0
-```
-
 ## Build
 
 ```
