@@ -202,6 +202,9 @@ func TestMoviePaths(t *testing.T) {
 		"Example Movie (1995) 4K HDR":    "Movies/Example Movie (1995)/Example Movie (1995) - 4K HDR.strm",
 		"Example Movie (1995) (Dubbed)":  "Movies/Example Movie (1995)/Example Movie (1995) - (Dubbed).strm",
 		"Example (Long) Movie (1995) 4K": "Movies/Example (Long) Movie (1995)/Example (Long) Movie (1995) - 4K.strm",
+		"Example Movie - 1995":           "Movies/Example Movie (1995)/Example Movie (1995).strm",
+		"Example Movie - 1995 4K":        "Movies/Example Movie (1995)/Example Movie (1995) - 4K.strm",
+		"Example Movie - Part 2":         "Movies/Example Movie - Part 2/Example Movie - Part 2.strm",
 		"Example Movie (4K)":             "Movies/Example Movie (4K)/Example Movie (4K).strm",
 	} {
 		if got := filepath.ToSlash(relPath(entry{name: name, url: "http://h/movie/u/p/1.mkv"})); got != want {

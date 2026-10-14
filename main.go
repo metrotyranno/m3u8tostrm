@@ -168,6 +168,9 @@ var episodeRe = regexp.MustCompile(`(?i)^(.*?)[\s._-]*S(\d+)[\s._-]*E\d{1,4}`)
 // movieTagRe splits "Title (2019) 4K HDR" into the title with year and the text after it.
 var movieTagRe = regexp.MustCompile(`^(.*\(\d{4}\))\s+(\S.*)$`)
 
+// dashYearRe matches "Title - 2008" (optionally followed by a tag), written as "Title (2008)".
+var dashYearRe = regexp.MustCompile(`^(.*\S) - ((?:19|20)\d{2})(\s.*)?$`)
+
 func kindOf(url string) string {
 	switch {
 	case strings.Contains(url, "/movie/"):
@@ -187,6 +190,8 @@ func relPath(e entry) string {
 	name := clean(e.name) + ".strm"
 	switch kindOf(e.url) {
 	case "movies":
+		e.name = dashYearRe.ReplaceAllString(e.name, "$1 ($2)$3")
+		name = clean(e.name) + ".strm"
 		if m := movieTagRe.FindStringSubmatch(e.name); m != nil {
 			title := clean(m[1])
 			return filepath.Join("Movies", title, title+" - "+clean(m[2])+".strm")
