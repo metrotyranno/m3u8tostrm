@@ -1,0 +1,13 @@
+{
+  "playlists": [
+    "http://provider.example:8080/get.php?username=USER&password=PASS&type=m3u_plus&output=ts"
+  ],
+  "output": "strm",
+  "interval": "6h",
+  "stale_after": "72h",
+  "types": ["movies", "series"],
+  "new_groups": "subscribe",
+  "exclude_titles": [],
+  "workers": 16,
+  "log_file": "m3u8tostrm.log"
+}

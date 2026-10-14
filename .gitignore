@@ -1,0 +1,6 @@
+dist/
+config.json
+groups.json
+*.log
+*.strm
+.m3u8tostrm-state.json
