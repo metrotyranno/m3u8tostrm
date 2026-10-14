@@ -191,6 +191,20 @@ func TestSetConfigKeys(t *testing.T) {
 	}
 }
 
+func TestMoviePaths(t *testing.T) {
+	for name, want := range map[string]string{
+		"Example Movie (1995)":           "Movies/Example Movie (1995)/Example Movie (1995).strm",
+		"Example Movie (1995) 4K HDR":    "Movies/Example Movie (1995)/Example Movie (1995) - 4K HDR.strm",
+		"Example Movie (1995) (Dubbed)":  "Movies/Example Movie (1995)/Example Movie (1995) - (Dubbed).strm",
+		"Example (Long) Movie (1995) 4K": "Movies/Example (Long) Movie (1995)/Example (Long) Movie (1995) - 4K.strm",
+		"Example Movie (4K)":             "Movies/Example Movie (4K)/Example Movie (4K).strm",
+	} {
+		if got := filepath.ToSlash(relPath(entry{name: name, url: "http://h/movie/u/p/1.mkv"})); got != want {
+			t.Errorf("%q: got %s, want %s", name, got, want)
+		}
+	}
+}
+
 func TestSeriesPaths(t *testing.T) {
 	for name, want := range map[string]string{
 		"Example Show S01 E02":          "Series/Example Show/Season 01/Example Show S01 E02.strm",

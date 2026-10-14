@@ -165,6 +165,9 @@ func attr(line, key string) string {
 
 var episodeRe = regexp.MustCompile(`(?i)^(.*?)[\s._-]*S(\d+)[\s._-]*E\d{1,4}`)
 
+// movieTagRe splits "Title (2019) 4K HDR" into the title with year and the text after it.
+var movieTagRe = regexp.MustCompile(`^(.*\(\d{4}\))\s+(\S.*)$`)
+
 func kindOf(url string) string {
 	switch {
 	case strings.Contains(url, "/movie/"):
@@ -177,12 +180,17 @@ func kindOf(url string) string {
 
 // relPath decides where an entry lives; groups are not folders.
 // Xtream-style URLs (/movie/, /series/) are split into Movies and Series so media servers
-// can scan them separately. Each movie gets its own folder, so versions labelled
-// "Title - Group" next to it show up in Emby/Jellyfin/Plex as one item with a version picker.
+// can scan them separately. Each movie gets a "Title (Year)" folder; anything after the year
+// (4K HDR, dubs, ...) becomes a "Title (Year) - label" version, which Emby/Jellyfin/Plex
+// show as one item with a version picker.
 func relPath(e entry) string {
 	name := clean(e.name) + ".strm"
 	switch kindOf(e.url) {
 	case "movies":
+		if m := movieTagRe.FindStringSubmatch(e.name); m != nil {
+			title := clean(m[1])
+			return filepath.Join("Movies", title, title+" - "+clean(m[2])+".strm")
+		}
 		return filepath.Join("Movies", clean(e.name), name)
 	case "series":
 		if m := episodeRe.FindStringSubmatch(e.name); m != nil && strings.TrimSpace(m[1]) != "" {
