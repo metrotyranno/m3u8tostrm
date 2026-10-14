@@ -163,7 +163,7 @@ func attr(line, key string) string {
 	return ""
 }
 
-var episodeRe = regexp.MustCompile(`(?i)^(.*?)[\s._-]*S(\d{1,3})[\s._-]*E\d{1,4}`)
+var episodeRe = regexp.MustCompile(`(?i)^(.*?)[\s._-]*S(\d+)[\s._-]*E\d{1,4}`)
 
 func kindOf(url string) string {
 	switch {
