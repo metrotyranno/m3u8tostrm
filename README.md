@@ -61,7 +61,7 @@ Series/<show>/Season NN/<name>.strm     URL contains /series/ and the name has S
 Groups are not folders. Each movie gets a `Title (Year)` folder, which is the layout Emby, Jellyfin and Plex recommend.
 - **Text after the year** (`4K HDR`, `(NL Gesproken)`, ...) becomes a version label in that folder: `Some Film (2019) 4K HDR` is written as `Some Film (2019)/Some Film (2019) - 4K HDR.strm`.
 - **Same stream in several groups:** written once.
-- **Same title in several groups, different streams** (e.g. an English and a Dutch-dubbed version): the first copy in the playlist keeps the plain name, and the others get their group appended, e.g. `Some Film (2019)/Some Film (2019) - Kids Dubbed.strm`. Media servers show these as one movie with a version picker.
+- **Same title in several groups, different streams** (e.g. an English and a Dutch-dubbed version): every copy gets its group appended, e.g. `Some Film (2019) - Family.strm` and `Some Film (2019) - Kids Dubbed.strm` in the same folder. A title that appears only once keeps its plain name. Media servers show these as one movie with a version picker.
 
 ## Stale / purge
 

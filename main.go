@@ -337,6 +337,12 @@ func syncOnce(c *Config) error {
 	seen := map[string]rec{}        // rel -> URL hash
 	inPlaylist := map[uint64]bool{} // every URL in the playlist, ticked or not
 	written1 := map[uint64]bool{}   // URLs already given a file this run
+	type want struct {
+		rel, url, group string
+		hash            uint64
+	}
+	var wanted []want
+	count := map[string]int{} // entries per path, before labelling duplicates
 	parsed, excludedN, sourceFailed := 0, 0, false
 	for _, src := range c.Playlists {
 		log.Printf("fetching playlist %s", redact(src))
@@ -363,21 +369,9 @@ func syncOnce(c *Config) error {
 				}
 				ticked[k]++
 				written1[hash] = true
-				// Same title from another group is a different stream (often another language):
-				// keep it, labelled with its group.
 				rel := relPath(e)
-				if _, dup := seen[rel]; dup {
-					base := strings.TrimSuffix(rel, ".strm") + " - " + clean(e.group)
-					rel = base + ".strm"
-					for n := 2; ; n++ {
-						if _, dup := seen[rel]; !dup {
-							break
-						}
-						rel = fmt.Sprintf("%s (%d).strm", base, n)
-					}
-				}
-				seen[rel] = rec{H: hash}
-				jobs <- job{rel, e.url, state[rel].H == hash}
+				wanted = append(wanted, want{rel, e.url, e.group, hash})
+				count[rel]++
 			})
 			rc.Close()
 		}
@@ -387,6 +381,23 @@ func syncOnce(c *Config) error {
 		} else {
 			log.Printf("  %d entries", parsed-before)
 		}
+	}
+	// Names are decided after the whole playlist is read: a title that appears more than once
+	// is a different stream each time (often another language), so every copy gets its group.
+	for _, w := range wanted {
+		rel := w.rel
+		if count[rel] > 1 {
+			base := strings.TrimSuffix(rel, ".strm") + " - " + clean(w.group)
+			rel = base + ".strm"
+			for n := 2; ; n++ {
+				if _, dup := seen[rel]; !dup {
+					break
+				}
+				rel = fmt.Sprintf("%s (%d).strm", base, n)
+			}
+		}
+		seen[rel] = rec{H: w.hash}
+		jobs <- job{rel, w.url, state[rel].H == w.hash}
 	}
 	close(jobs)
 	wg.Wait()

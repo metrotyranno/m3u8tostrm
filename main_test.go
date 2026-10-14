@@ -54,10 +54,10 @@ func TestSyncAndPurge(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := map[string]string{
-		"Live/Example Channel HD.strm":                                    "http://host/user/pass/101.ts",
-		"Movies/Example Movie (1995)/Example Movie (1995).strm":           "http://host/movie/user/pass/202.mkv",
-		"Series/Example Show/Season 01/Example Show S01 E02.strm":         "http://host/series/user/pass/303.mkv",
-		"Series/Example Show/Season 01/Example Show S01 E02 - Drama.strm": "http://host/series/user/pass/304.mkv",
+		"Live/Example Channel HD.strm":                                        "http://host/user/pass/101.ts",
+		"Movies/Example Movie (1995)/Example Movie (1995).strm":               "http://host/movie/user/pass/202.mkv",
+		"Series/Example Show/Season 01/Example Show S01 E02 - Drama.strm":     "http://host/series/user/pass/303.mkv",
+		"Series/Example Show/Season 01/Example Show S01 E02 - Drama (2).strm": "http://host/series/user/pass/304.mkv",
 	}
 	for rel, url := range want {
 		b, err := os.ReadFile(filepath.Join(out, filepath.FromSlash(rel)))
@@ -145,11 +145,16 @@ http://h/movie/u/p/555.mkv
 		t.Fatal(err)
 	}
 	files, _ := filepath.Glob(filepath.Join(out, "Movies", "*", "*.strm"))
-	if len(files) != 3 { // same URL in two groups = one file; dub kept with a label
+	if len(files) != 3 { // same URL in two groups = one file; both versions labelled
 		t.Fatalf("want 3 movies, got %v", files)
 	}
-	if b, _ := os.ReadFile(filepath.Join(out, "Movies", "Sample Film (2019)", "Sample Film (2019) - Kids Dubbed.strm")); string(b) != "http://h/movie/u/p/2002.mkv" {
-		t.Errorf("dub not labelled: %q", b)
+	for file, url := range map[string]string{
+		"Sample Film (2019) - Family.strm":      "http://h/movie/u/p/2001.mkv",
+		"Sample Film (2019) - Kids Dubbed.strm": "http://h/movie/u/p/2002.mkv",
+	} {
+		if b, _ := os.ReadFile(filepath.Join(out, "Movies", "Sample Film (2019)", file)); string(b) != url {
+			t.Errorf("%s: got %q", file, b)
+		}
 	}
 
 	// Excluding a title word removes it on the next sync despite the long grace period.
